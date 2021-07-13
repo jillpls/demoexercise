@@ -28,7 +28,7 @@ class UserDetail(generics.RetrieveAPIView):
 def mailing_lists(request):
     if request.method == 'GET':
         user = request.user
-        if type(user) == AnonymousUser:
+        if isinstance(user, AnonymousUser):
             return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserListsSerializer(user)
         return Response(data=JSONRenderer().render(serializer.data),
@@ -40,7 +40,8 @@ def mailing_lists(request):
             try:
                 serializer.save(user=request.user)
             except ValueError:
-                return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+                return Response(serializer.data,
+                                status=status.HTTP_401_UNAUTHORIZED)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,18 +52,19 @@ def mailing_lists(request):
 def start_campaign(request):
     if request.method != 'POST':
         return Response(data=None, status=status.HTTP_400_BAD_REQUEST)
-    
-    if type(request.user) == AnonymousUser:
+
+    if isinstance(request.user, AnonymousUser):
         return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
 
     serializer = CampaignSerializer(data=request.data)
     if serializer.is_valid():
-        campaign = serializer.create()
+        campaign = serializer.create(serializer.validated_data)
 
         # Check if video_id exists
 
         try:
-            video = Video.objects.filter(user=request.user).get(id=campaign.video_id)
+            video = Video.objects.filter(user=request.user).get(
+                id=campaign.video_id)
             campaign.video = video
         except ObjectDoesNotExist:
             return Response(data=serializer.data,
@@ -85,6 +87,7 @@ def start_campaign(request):
         post_serializer = CampaignPostSerializer(campaign_post)
 
         request = requests.post("https://jsonplaceholder.typicode.com/posts",
-                          data=JSONRenderer().render(post_serializer.data))
+                                data=JSONRenderer().render(
+                                    post_serializer.data))
 
     return Response(data=None, status=request.status_code)

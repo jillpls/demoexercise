@@ -1,5 +1,5 @@
-from mailing_campaign.models import Contact, Video
 from typing import List
+from mailing_campaign.models import Contact, Video
 
 
 class Campaign(object):
@@ -41,7 +41,7 @@ class Mail(object):
 
 class CampaignPost(object):
     template_id = 0
-    instances = []
+    instances = None
 
     def __init__(self, template_id, instances=[]):
         self.template_id = template_id
@@ -62,9 +62,9 @@ def generate_instances(campaign: Campaign) -> List[Mail]:
 
     mails = []
 
-    for c in contacts:
-        mail_data = MailData(c.first_name, c.last_name, video_link)
-        mail = Mail(c.email_address, mail_data)
+    for contact in contacts:
+        mail_data = MailData(contact.first_name, contact.last_name, video_link)
+        mail = Mail(contact.email_address, mail_data)
         mails.append(mail)
 
     return mails
