@@ -14,6 +14,5 @@ class Contact(models.Model):
 
 
 class ContactList(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    creation_time = models.DateTimeField()
+    creation_time = models.DateTimeField(auto_now_add=True)
     contacts = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
