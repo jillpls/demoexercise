@@ -6,11 +6,12 @@ from mailing_campaign.models import ContactList, Contact
 
 class UserSerializer(serializers.ModelSerializer):
     contact_lists = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=ContactList.objects.all())
+        many=True, queryset=ContactList.objects.all()
+    )
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'contact_lists']
+        fields = ["id", "username", "contact_lists"]
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -23,10 +24,10 @@ class ContactListSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True)
     id = serializers.IntegerField(required=False)
     creation_time = serializers.DateTimeField(required=False)
-    user = serializers.ReadOnlyField(source='user.username')
+    user = serializers.ReadOnlyField(source="user.username")
 
     def create(self, validated_data):
-        contacts_data = validated_data.pop('contacts')
+        contacts_data = validated_data.pop("contacts")
         instance = ContactList.objects.create(**validated_data)
         for contact in contacts_data:
             Contact.objects.create(contact_list=instance, **contact)
@@ -50,7 +51,7 @@ class UserListsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['contact_lists']
+        fields = ["contact_lists"]
 
 
 class CampaignSerializer(serializers.Serializer):

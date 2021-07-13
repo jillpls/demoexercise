@@ -15,8 +15,10 @@ class Campaign(object):
         self.contact_list_id = contact_list_id
 
     def __str__(self) -> str:
-        return f'[video_id:{self.video_id}, template_id:{self.template_id}, ' \
-               f'contact_list_id:{self.contact_list_id}] '
+        return (
+            f"[video_id:{self.video_id}, template_id:{self.template_id}, "
+            f"contact_list_id:{self.contact_list_id}] "
+        )
 
 
 class MailData:
