@@ -17,16 +17,6 @@ from mailing_campaign.models import ContactList, Video
 from mailing_campaign.mail import CampaignPost, generate_instances
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
 @api_view(["GET", "POST"])
 def mailing_lists(request):
     """Accepts GET and POST requests for ContactLists
