@@ -1,6 +1,3 @@
-from re import template
-
-
 class Campaign(object):
     video_id = 0
     template_id = 0 

@@ -20,3 +20,5 @@ class Contact(models.Model):
     last_name = models.TextField()
     email_address = models.TextField()
     contact_list = models.ForeignKey(ContactList, on_delete=models.CASCADE, related_name='contacts')
+
+
