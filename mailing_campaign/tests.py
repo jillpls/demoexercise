@@ -96,3 +96,27 @@ class ContactListAPITest(TestCase):
             response = client.post('/start_campaign/', campaign_json, content_type='application/json')
             self.assertEqual(response.status_code, 201)
     
+    @staticmethod
+    def create_campaign_dict():
+        return {'video_id' : 1, 'template_id' : 10, 'contact_list_id' : 2}
+
+    def test_campaign_post_serializer(self):
+        client = Client()
+        client.login(username='aliteralshoe', password='lace')
+        video = Video.objects.create(user=User.objects.get(username='aliteralshoe'))
+        with open('mailing_campaign/examples/test.json') as contact_list:
+            contact_list_json = contact_list.read()
+            client.post('/mailing_campaign/', contact_list_json, content_type='application/json')
+            client.post('/mailing_campaign/', contact_list_json, content_type='application/json')
+        
+        serializer = CampaignSerializer(data=self.create_campaign_dict())
+        self.assertTrue(serializer.is_valid())
+
+        campaign = Campaign(1, 10, 2)
+        campaign.video = video
+        campaign.contact_list = ContactList.objects.get(id=2)
+        campaign_post = CampaignPost(campaign.template_id,
+                                     generate_instances(campaign))
+        post_serializer = CampaignPostSerializer(campaign_post)
+        rendered = JSONRenderer().render(post_serializer.data)
+        self.assertEqual(rendered, b'{"template_id":10,"instances":[{"email_address":"for@ever.de","data":{"first_name":"For","last_name":"Ever","video_link":""}},{"email_address":"never@again.com","data":{"first_name":"Never","last_name":"Again","video_link":""}}]}')
