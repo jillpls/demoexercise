@@ -7,12 +7,12 @@ class Video(models.Model):
     link = models.URLField()  # Link unter dem das Video abrufbar ist
 
 
+class ContactList(models.Model):
+    creation_time = models.DateTimeField(auto_now_add=True)
+
+
 class Contact(models.Model):
     first_name = models.TextField()
     last_name = models.TextField()
     email_address = models.TextField()
-
-
-class ContactList(models.Model):
-    creation_time = models.DateTimeField(auto_now_add=True)
-    contacts = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
+    contact_list = models.ForeignKey(ContactList, on_delete=models.CASCADE, related_name='contacts')
