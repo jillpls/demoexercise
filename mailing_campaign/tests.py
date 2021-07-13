@@ -65,3 +65,34 @@ class ContactListAPITest(TestCase):
         self.assertEqual(response.content, b'"{\\"contact_lists\\":[]}"')
         
     
+    def test_create_campaign(self):
+        client = Client()
+        with open('mailing_campaign/examples/mail_test.json') as campaign:
+            campaign_json = campaign.read()
+
+            # Test unauthorized access
+            response = client.post('/start_campaign/', campaign_json, content_type='application/json')
+            self.assertEqual(response.status_code, 401)
+            client.login(username='aliteralshoe', password='lace')
+
+            # Test response for non-existent video
+            response = client.post('/start_campaign/', campaign_json, content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+            Video.objects.create(user=User.objects.get(username='aliteralshoe'))
+            
+            # Check if video exists
+            self.assertEqual(f'{Video.objects.all()}', '<QuerySet [<Video: Video object (1)>]>')
+        
+            # Test response for non-existent contact list
+            response = client.post('/start_campaign/', campaign_json, content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+            
+            with open('mailing_campaign/examples/test.json') as contact_list:
+                contact_list_json = contact_list.read()
+                client.post('/mailing_campaign/', contact_list_json, content_type='application/json')
+                client.post('/mailing_campaign/', contact_list_json, content_type='application/json')
+
+            # Test proper functionality
+            response = client.post('/start_campaign/', campaign_json, content_type='application/json')
+            self.assertEqual(response.status_code, 201)
+    
