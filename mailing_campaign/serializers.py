@@ -19,7 +19,7 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = ["first_name", "last_name", "email_address"]
 
 
-class ContactListSerializer(serializers.Serializer):
+class ContactListSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True)
     id = serializers.IntegerField(required=False)
     creation_time = serializers.DateTimeField(required=False)
@@ -31,6 +31,10 @@ class ContactListSerializer(serializers.Serializer):
         for c in contacts_data:
             Contact.objects.create(contact_list=instance, **c)
         return instance
+    
+    class Meta:
+        model = ContactList
+        fields = ["contacts", "id", "creation_time", "user"]
 
 
 class ContactListSerializerGet(serializers.ModelSerializer):
@@ -49,7 +53,7 @@ class UserListsSerializer(serializers.ModelSerializer):
         fields = ['contact_lists']
 
 
-class CampaignSerializer(serializers.Serializer):
+class CampaignSerializer(serializers.ModelSerializer):
     video_id = serializers.IntegerField()
     template_id = serializers.IntegerField()
     contact_list_id = serializers.IntegerField()
@@ -58,17 +62,17 @@ class CampaignSerializer(serializers.Serializer):
         model = Campaign
         fields = ['video_id', 'template_id', 'contact_list_id']
 
-    def create(self):
-        return Campaign(**self.validated_data)
+    def create(self, validated_data):
+        return Campaign(**validated_data)
 
 
-class MailDataSerializer(serializers.Serializer):
+class MailDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailData
         fields = ['first_name', 'last_name', 'video_link']
 
 
-class MailSerializer(serializers.Serializer):
+class MailSerializer(serializers.ModelSerializer):
     data = MailDataSerializer()
 
     class Meta:
@@ -76,6 +80,6 @@ class MailSerializer(serializers.Serializer):
         fields = ['email_address', 'data']
 
 
-class CampaignPostSerializer(serializers.Serializer):
+class CampaignPostSerializer(serializers.ModelSerializer):
     template_id = serializers.IntegerField()
     instances = MailSerializer(many=True)
