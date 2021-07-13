@@ -15,7 +15,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = ("id", "first_name", "last_name", "email_address")
+        fields = ["first_name", "last_name", "email_address"]
 
 
 class ContactListSerializer(serializers.Serializer):
@@ -30,3 +30,19 @@ class ContactListSerializer(serializers.Serializer):
         for c in contacts_data:
             Contact.objects.create(contact_list=instance, **c)
         return instance
+
+
+class ContactListSerializerGet(serializers.ModelSerializer):
+    contacts = ContactSerializer(many=True)
+
+    class Meta:
+        model = ContactList
+        fields = ["id", "contacts"]
+
+
+class UserListsSerializer(serializers.ModelSerializer):
+    contact_lists = ContactListSerializerGet(many=True)
+
+    class Meta:
+        model = User
+        fields = ['contact_lists']
