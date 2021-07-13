@@ -1,6 +1,6 @@
 import requests
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status, generics
 from rest_framework.response import Response
@@ -26,6 +26,8 @@ class UserDetail(generics.RetrieveAPIView):
 def mailing_lists(request):
     if request.method == 'GET':
         user = request.user
+        if type(user) == AnonymousUser:
+            return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserListsSerializer(user)
         return Response(data=serializer.data,
                         status=status.HTTP_200_OK)
