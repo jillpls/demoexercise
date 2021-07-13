@@ -1,8 +1,10 @@
+from typing import Type
 import requests
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status, generics
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from mailing_campaign.serializers import CampaignSerializer, \
@@ -29,7 +31,7 @@ def mailing_lists(request):
         if type(user) == AnonymousUser:
             return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserListsSerializer(user)
-        return Response(data=serializer.data,
+        return Response(data=JSONRenderer().render(serializer.data),
                         status=status.HTTP_200_OK)
 
     if request.method == 'POST':
@@ -49,6 +51,9 @@ def mailing_lists(request):
 def start_campaign(request):
     if request.method != 'POST':
         return Response(data=None, status=status.HTTP_400_BAD_REQUEST)
+    
+    if type(request.user) == AnonymousUser:
+        return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
 
     serializer = CampaignSerializer(data=request.data)
     if serializer.is_valid():
@@ -78,8 +83,8 @@ def start_campaign(request):
         campaign_post = CampaignPost(campaign.template_id,
                                      generate_instances(campaign))
         post_serializer = CampaignPostSerializer(campaign_post)
+
         request = requests.post("https://jsonplaceholder.typicode.com/posts",
-                          data=post_serializer.data)
-        print(request)
+                          data=JSONRenderer().render(post_serializer.data))
 
     return Response(data=None, status=request.status_code)
