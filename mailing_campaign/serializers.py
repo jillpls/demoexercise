@@ -4,10 +4,11 @@ from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    contact_lists = serializers.PrimaryKeyRelatedField(many=True, queryset=ContactList.objects.all())
+    
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'contact_lists']
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -17,12 +18,11 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = ("id", "first_name", "last_name", "email_address")
 
 
-class ContactListSerializer(serializers.ModelSerializer):
+class ContactListSerializer(serializers.Serializer):
     contacts = ContactSerializer(many=True)
-
-    class Meta:
-        model = ContactList
-        fields = ("id", "creation_time", "contacts")
+    id = serializers.IntegerField(required=False)
+    creation_time = serializers.DateTimeField(required=False)
+    user = serializers.ReadOnlyField(source='user.username')
 
     def create(self, validated_data):
         contacts_data = validated_data.pop('contacts')

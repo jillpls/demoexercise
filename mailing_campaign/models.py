@@ -9,6 +9,7 @@ class Video(models.Model):
 
 class ContactList(models.Model):
     creation_time = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('auth.User', related_name='contact_lists', on_delete=models.CASCADE)
 
 
 class Contact(models.Model):
