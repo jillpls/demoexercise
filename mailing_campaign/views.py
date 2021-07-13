@@ -28,12 +28,15 @@ def mailing_lists(request):
         user = request.user
         serializer = UserListsSerializer(user)
         return Response(data=serializer.data,
-                        status=status.HTTP_418_IM_A_TEAPOT)
+                        status=status.HTTP_200_OK)
 
     if request.method == 'POST':
         serializer = ContactListSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            try:
+                serializer.save(user=request.user)
+            except ValueError:
+                return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
