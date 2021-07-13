@@ -53,33 +53,26 @@ class UserListsSerializer(serializers.ModelSerializer):
         fields = ['contact_lists']
 
 
-class CampaignSerializer(serializers.ModelSerializer):
+class CampaignSerializer(serializers.Serializer):
     video_id = serializers.IntegerField()
     template_id = serializers.IntegerField()
     contact_list_id = serializers.IntegerField()
 
-    class Meta:
-        model = Campaign
-        fields = ['video_id', 'template_id', 'contact_list_id']
-
-    def create(self, validated_data):
-        return Campaign(**validated_data)
+    def create(self):
+        return Campaign(**self.validated_data)
 
 
-class MailDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MailData
-        fields = ['first_name', 'last_name', 'video_link']
+class MailDataSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    video_link = serializers.CharField()
 
 
-class MailSerializer(serializers.ModelSerializer):
+class MailSerializer(serializers.Serializer):
+    email_address = serializers.EmailField()
     data = MailDataSerializer()
+    
 
-    class Meta:
-        model = Mail
-        fields = ['email_address', 'data']
-
-
-class CampaignPostSerializer(serializers.ModelSerializer):
+class CampaignPostSerializer(serializers.Serializer):
     template_id = serializers.IntegerField()
     instances = MailSerializer(many=True)
