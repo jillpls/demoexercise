@@ -134,7 +134,7 @@ class ContactListAPITest(TestCase):
     def test_campaign_post_serializer(self):
         client = Client()
         client.login(username="aliteralshoe", password="lace")
-        video = Video.objects.create(user=User.objects.get(username="aliteralshoe"))
+        video = Video.objects.create(user=User.objects.get(username="aliteralshoe"), link="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
         with open("mailing_campaign/examples/test.json") as contact_list:
             contact_list_json = contact_list.read()
             client.post(
@@ -157,5 +157,5 @@ class ContactListAPITest(TestCase):
         rendered = JSONRenderer().render(post_serializer.data)
         self.assertEqual(
             rendered,
-            b'{"template_id":10,"instances":[{"email_address":"for@ever.de","data":{"first_name":"For","last_name":"Ever","video_link":""}},{"email_address":"never@again.com","data":{"first_name":"Never","last_name":"Again","video_link":""}}]}',
+            b'{"template_id":10,"instances":[{"email_address":"for@ever.de","data":{"first_name":"For","last_name":"Ever","video_link":"https://www.youtube.com/watch?v=dQw4w9WgXcQ"}},{"email_address":"never@again.com","data":{"first_name":"Never","last_name":"Again","video_link":"https://www.youtube.com/watch?v=dQw4w9WgXcQ"}}]}'
         )
