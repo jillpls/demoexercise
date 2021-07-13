@@ -9,7 +9,8 @@ class Video(models.Model):
 
 class ContactList(models.Model):
     creation_time = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey('auth.User', related_name='contact_lists', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', related_name='contact_lists',
+                             on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['creation_time']
@@ -19,4 +20,5 @@ class Contact(models.Model):
     first_name = models.TextField()
     last_name = models.TextField()
     email_address = models.TextField()
-    contact_list = models.ForeignKey(ContactList, on_delete=models.CASCADE, related_name='contacts')
+    contact_list = models.ForeignKey(ContactList, on_delete=models.CASCADE,
+                                     related_name='contacts')

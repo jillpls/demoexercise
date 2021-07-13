@@ -5,15 +5,15 @@ from mailing_campaign.mail import Campaign, Mail, MailData
 
 
 class UserSerializer(serializers.ModelSerializer):
-    contact_lists = serializers.PrimaryKeyRelatedField(many=True, queryset=ContactList.objects.all())
-    
+    contact_lists = serializers.PrimaryKeyRelatedField(many=True,
+                                                       queryset=ContactList.objects.all())
+
     class Meta:
         model = User
         fields = ['id', 'username', 'contact_lists']
 
 
 class ContactSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Contact
         fields = ["first_name", "last_name", "email_address"]
@@ -50,7 +50,7 @@ class UserListsSerializer(serializers.ModelSerializer):
 
 
 class CampaignSerializer(serializers.Serializer):
-    video_id = serializers.IntegerField() 
+    video_id = serializers.IntegerField()
     template_id = serializers.IntegerField()
     contact_list_id = serializers.IntegerField()
 
@@ -63,11 +63,10 @@ class CampaignSerializer(serializers.Serializer):
 
 
 class MailDataSerializer(serializers.Serializer):
-
     class Meta:
         model = MailData
         fields = ['first_name', 'last_name', 'video_link']
-        
+
 
 class MailSerializer(serializers.Serializer):
     data = MailDataSerializer()
