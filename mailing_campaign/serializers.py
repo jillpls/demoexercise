@@ -29,6 +29,7 @@ class ContactListSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         contacts_data = validated_data.pop("contacts")
         instance = ContactList.objects.create(**validated_data)
+        # Create nested contacts
         for contact in contacts_data:
             Contact.objects.create(contact_list=instance, **contact)
         return instance
@@ -39,6 +40,8 @@ class ContactListSerializer(serializers.ModelSerializer):
 
 
 class ContactListSerializerGet(serializers.ModelSerializer):
+    """Serializer for GET requests of ContactLists to reduce the amount of fields returned
+    """
     contacts = ContactSerializer(many=True)
 
     class Meta:

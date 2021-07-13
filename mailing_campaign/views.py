@@ -1,4 +1,3 @@
-from typing import Type
 import requests
 
 from django.contrib.auth.models import AnonymousUser, User
@@ -30,6 +29,11 @@ class UserDetail(generics.RetrieveAPIView):
 
 @api_view(["GET", "POST"])
 def mailing_lists(request):
+    """Accepts GET and POST requests for ContactLists
+
+    Returns:
+        Response: HTTP response
+    """
     if request.method == "GET":
         user = request.user
         if isinstance(user, AnonymousUser):
@@ -52,8 +56,13 @@ def mailing_lists(request):
     return Response(data=None, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 def start_campaign(request):
+    """Accepts POST requests to start email campaigns
+
+    Returns:
+        Response: HTTP response
+    """
     if request.method != "POST":
         return Response(data=None, status=status.HTTP_400_BAD_REQUEST)
 

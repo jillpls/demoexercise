@@ -143,9 +143,11 @@ class ContactListAPITest(TestCase):
                 "/mailing_campaign/", contact_list_json, content_type="application/json"
             )
 
+        # Test if dictionary is valid
         serializer = CampaignSerializer(data=self.create_campaign_dict())
         self.assertTrue(serializer.is_valid())
 
+        # Test json output of CampaignPostSerializer
         campaign = Campaign(1, 10, 2)
         campaign.video = video
         campaign.contact_list = ContactList.objects.get(id=2)

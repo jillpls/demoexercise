@@ -1,8 +1,13 @@
+"""Contains classes and helper functions to handle a mail campaign POST
+Classes in this module are not Models and cannot be stored in the database
+"""
 from typing import List
 from mailing_campaign.models import Contact, Video
 
 
 class Campaign(object):
+    """Class for receiving and processing an email campaign POST
+    """
     video_id = 0
     template_id = 0
     contact_list_id = 0
@@ -21,7 +26,9 @@ class Campaign(object):
         )
 
 
-class MailData:
+class MailData(object):
+    """Content of an email sent through a CampaignPost
+    """
     first_name = ""
     last_name = ""
     video_link = ""
@@ -33,6 +40,8 @@ class MailData:
 
 
 class Mail(object):
+    """Email sent through a CampaignPost
+    """
     email_address = ""
     data = None
 
@@ -42,6 +51,8 @@ class Mail(object):
 
 
 class CampaignPost(object):
+    """Class used for re-serialization of a received Campaign
+    """
     template_id = 0
     instances = None
 
@@ -49,11 +60,19 @@ class CampaignPost(object):
         self.template_id = template_id
         self.instances = instances
 
-    def add_instance(self, instance: Mail):
-        self.instances.append(instance)
-
 
 def generate_instances(campaign: Campaign) -> List[Mail]:
+    """Generates a list of Mail objects from a campaign
+
+    Args:
+        campaign (Campaign): source Campaign
+
+    Raises:
+        ValueError: if a campaign field is None
+
+    Returns:
+        List[Mail]: list of Mail objects
+    """
     if campaign.contact_list is None:
         raise ValueError("campaign.contact_list may not be None")
     if campaign.video is None:
