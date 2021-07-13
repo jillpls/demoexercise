@@ -1,0 +1,14 @@
+{
+  "contacts": [
+    {
+      "first_name": "For",
+      "last_name": "Ever",
+      "email_address": "for@ever.de"
+    },
+    {
+      "first_name": "Never",
+      "last_name": "Again",
+      "email_address": "never@again.com"
+    }
+  ]
+}
