@@ -126,6 +126,7 @@ class ContactListAPITest(TestCase):
             )
             self.assertEqual(response.status_code, 201)
 
+
     @staticmethod
     def create_campaign_dict():
         return {"video_id": 1, "template_id": 10, "contact_list_id": 2}

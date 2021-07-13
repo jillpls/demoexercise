@@ -1,8 +1,7 @@
 import requests
 
-from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status, generics
+from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -26,7 +25,7 @@ def mailing_lists(request):
     """
     if request.method == "GET":
         user = request.user
-        if isinstance(user, AnonymousUser):
+        if not request.user.is_authenticated:
             # Not logged in
             return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserListsSerializer(user)
@@ -58,10 +57,8 @@ def start_campaign(request):
     Returns:
         Response: HTTP response
     """
-    if request.method != "POST":
-        return Response(data=None, status=status.HTTP_400_BAD_REQUEST)
 
-    if isinstance(request.user, AnonymousUser):
+    if not request.user.is_authenticated:
         return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
 
     serializer = CampaignSerializer(data=request.data)
@@ -82,8 +79,9 @@ def start_campaign(request):
             contact_list = ContactList.objects.get(id=campaign.contact_list_id)
             campaign.contact_list = contact_list
             if contact_list.user != request.user:
+                # This should not be reached (unless two videos share an id?)
                 return Response(
-                    data=serializer.data, status=status.HTTP_401_UNAUTHORIZED
+                    data=serializer.data, status=status.HTTP_403_FORBIDDEN
                 )
         except ObjectDoesNotExist:
             return Response(data=serializer.data, status=status.HTTP_400_BAD_REQUEST)
