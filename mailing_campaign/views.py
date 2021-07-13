@@ -1,9 +1,11 @@
+from mailing_campaign.mail import CampaignPost, generate_instances
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import requests
 
-from mailing_campaign.serializers import CampaignSerializer, ContactListSerializer, UserListsSerializer, UserSerializer
+from mailing_campaign.serializers import CampaignSerializer, CampaignPostSerializer, ContactListSerializer, UserListsSerializer, UserSerializer
 from mailing_campaign.models import ContactList, Video
 
 from django.contrib.auth.models import User
@@ -50,7 +52,7 @@ def start_campaign(request):
         try: 
             x : int = campaign.video_id
             video = Video.objects.filter(user=request.user).get(id=x)
-            print(video)
+            campaign.video = video
         except ObjectDoesNotExist:
             return Response(data=serializer.data, status=status.HTTP_400_BAD_REQUEST)
         
@@ -58,12 +60,15 @@ def start_campaign(request):
 
         try:
             contact_list = ContactList.objects.get(id=campaign.contact_list_id)
+            campaign.contact_list = contact_list
             if contact_list.user != request.user:
                 return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
         except ObjectDoesNotExist:
             return Response(data=serializer.data, status=status.HTTP_400_BAD_REQUEST)
-        
 
+        campaign_post = CampaignPost(campaign.template_id, generate_instances(campaign))
+        post_serializer = CampaignPostSerializer(campaign_post)
+        r = requests.post("https://jsonplaceholder.typicode.com/posts", data=post_serializer.data)
+        print(r)
 
-
-    return Response(data=None, status=status.HTTP_404_NOT_FOUND)
+    return Response(data=None, status=r.status_code)

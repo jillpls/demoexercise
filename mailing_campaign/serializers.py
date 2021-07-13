@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from mailing_campaign.models import ContactList, Contact
 from django.contrib.auth.models import User
-from mailing_campaign.mail import Campaign
+from mailing_campaign.mail import Campaign, Mail, MailData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,3 +60,23 @@ class CampaignSerializer(serializers.Serializer):
 
     def create(self):
         return Campaign(**self.validated_data)
+
+
+class MailDataSerializer(serializers.Serializer):
+
+    class Meta:
+        model = MailData
+        fields = ['first_name', 'last_name', 'video_link']
+        
+
+class MailSerializer(serializers.Serializer):
+    data = MailDataSerializer()
+
+    class Meta:
+        model = Mail
+        fields = ['email_address', 'data']
+
+
+class CampaignPostSerializer(serializers.Serializer):
+    template_id = serializers.IntegerField()
+    instances = MailSerializer(many=True)
