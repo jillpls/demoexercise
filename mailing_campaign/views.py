@@ -27,8 +27,10 @@ def mailing_lists(request):
     if request.method == "GET":
         user = request.user
         if isinstance(user, AnonymousUser):
+            # Not logged in
             return Response(request.data, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserListsSerializer(user)
+        # Return lists of user rendered as json
         return Response(
             data=JSONRenderer().render(serializer.data), status=status.HTTP_200_OK
         )
@@ -39,11 +41,14 @@ def mailing_lists(request):
             try:
                 serializer.save(user=request.user)
             except ValueError:
+                # User does not exist
                 return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+            # Successful post
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Invalid input
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response(data=None, status=status.HTTP_404_NOT_FOUND)
+    # Backup for unexpected behavior
+    return Response(data=None, status=status.HTTP_40)
 
 
 @api_view(["POST"])
